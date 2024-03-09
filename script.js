@@ -1,14 +1,5 @@
 'use strict';
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// BANKIST APP
-
-/////////////////////////////////////////////////
-// Data
-
-// DIFFERENT DATA! Contains movement dates, currency and locale
-//Jonas Schmedtmann
 const account1 = {
   owner: 'Sahil Mankar',
   movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
@@ -26,7 +17,7 @@ const account1 = {
     '2023-03-26T10:51:36.790Z',
   ],
   currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  locale: 'pt-PT',
 };
 
 const account2 = {
@@ -51,9 +42,8 @@ const account2 = {
 
 const accounts = [account1, account2];
 
-/////////////////////////////////////////////////
+
 if (typeof window !== 'undefined') {
-  // Elements
   const labelWelcome = document.querySelector('.welcome');
   const labelDate = document.querySelector('.date');
   const labelBalance = document.querySelector('.balance__value');
@@ -79,8 +69,7 @@ if (typeof window !== 'undefined') {
   const inputCloseUsername = document.querySelector('.form__input--user');
   const inputClosePin = document.querySelector('.form__input--pin');
 
-  /////////////////////////////////////////////////
-  // Functions
+  
 
   const formatMovementDate = function (date, locale) {
     const calcDaysPassed = (date1, date2) =>
@@ -92,12 +81,7 @@ if (typeof window !== 'undefined') {
     if (daysPassed === 0) return 'Today';
     if (daysPassed === 1) return 'Yestarday';
     if (daysPassed <= 7) return `${daysPassed} days ago`;
-    // else {
-    //   const day = `${date.getDate()}`.padStart(2, 0);
-    //   const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    //   const year = date.getFullYear();
-    //   return `${day}/${month}/${year}`;
-    // }
+  
 
     return new Intl.DateTimeFormat(locale).format(date);
   };
@@ -160,7 +144,6 @@ if (typeof window !== 'undefined') {
       .filter(mov => mov > 0)
       .map(deposit => (deposit * acc.interestRate) / 100)
       .filter((int, i, arr) => {
-        // console.log(arr);
         return int >= 1;
       })
       .reduce((acc, int) => acc + int, 0);
@@ -183,13 +166,11 @@ if (typeof window !== 'undefined') {
   createUsernames(accounts);
 
   const updateUI = function (acc) {
-    // Display movements
+  
     displayMovements(acc);
 
-    // Display balance
     calcDisplayBalance(acc);
 
-    // Display summary
     calcDisplaySummary(acc);
   };
 
@@ -197,39 +178,31 @@ if (typeof window !== 'undefined') {
     const tick = function () {
       const min = String(Math.trunc(time / 60)).padStart(2, 0);
       const sec = String(time % 60).padStart(2, 0);
-      // in each call, print remaining time
+
       labelTimer.textContent = `${min}:${sec}`;
 
-      // when 0 sec, stop timer and log out user
       if (time === 0) {
         clearInterval(timer);
         labelWelcome.textContent = 'Log in to get started';
         containerApp.style.opacity = 0;
       }
 
-      // decrease 1sec
       time--;
     };
-    // set time to 5 min
+
     let time = 120;
 
-    // call the timer every second
+  
     tick();
     const timer = setInterval(tick, 1000);
 
     return timer;
   };
-  ///////////////////////////////////////
-  // Event handlers
+
   let currentAccount, timer;
 
-  // FAKE ALWAYS LOGGED IN
-  // currentAccount = account1;
-  // updateUI(currentAccount);
-  // containerApp.style.opacity = 100;
-
   btnLogin.addEventListener('click', function (e) {
-    // Prevent form from submitting
+
     e.preventDefault();
 
     currentAccount = accounts.find(
@@ -238,13 +211,13 @@ if (typeof window !== 'undefined') {
     console.log(currentAccount);
 
     if (currentAccount?.pin === +inputLoginPin.value) {
-      // Display UI and message
+
       labelWelcome.textContent = `Welcome back, ${
         currentAccount.owner.split(' ')[0]
       }`;
       containerApp.style.opacity = 100;
 
-      // Create Current date and time
+ 
       const now = new Date();
       const options = {
         hour: 'numeric',
@@ -252,23 +225,20 @@ if (typeof window !== 'undefined') {
         day: 'numeric',
         month: 'numeric',
         year: 'numeric',
-        // weekday: 'long',
       };
-      // const locale = navigator.language;
-      // console.log(locale);
+
 
       labelDate.textContent = new Intl.DateTimeFormat(
         currentAccount.locale,
         options
       ).format(now);
 
-      // Clear input fields
+
       inputLoginUsername.value = inputLoginPin.value = '';
       inputLoginPin.blur();
 
       if (timer) clearInterval(timer);
       timer = startLogOutTimer();
-      // Update UI
       updateUI(currentAccount);
     }
   });
@@ -287,17 +257,17 @@ if (typeof window !== 'undefined') {
       currentAccount.balance >= amount &&
       receiverAcc?.username !== currentAccount.username
     ) {
-      // Doing the transfer
+
       currentAccount.movements.push(-amount);
       receiverAcc.movements.push(amount);
 
-      // Add transfer date
+
       currentAccount.movementsDates.push(new Date().toISOString());
       receiverAcc.movementsDates.push(new Date().toISOString());
 
-      // Update UI
+
       updateUI(currentAccount);
-      // Reset the timer
+  
       clearInterval(timer);
       timer = startLogOutTimer();
     }
@@ -313,16 +283,14 @@ if (typeof window !== 'undefined') {
       currentAccount.movements.some(mov => mov >= amount * 0.1)
     ) {
       setTimeout(function () {
-        // Add movement
+   
         currentAccount.movements.push(amount);
 
-        // Add loan date
         currentAccount.movementsDates.push(new Date().toISOString());
 
-        // Update UI
         updateUI(currentAccount);
       }, 2500);
-      // Reset the timer
+
       clearInterval(timer);
       timer = startLogOutTimer();
     }
@@ -340,12 +308,9 @@ if (typeof window !== 'undefined') {
         acc => acc.username === currentAccount.username
       );
       console.log(index);
-      // .indexOf(23)
 
-      // Delete account
       accounts.splice(index, 1);
 
-      // Hide UI
       containerApp.style.opacity = 0;
     }
 
